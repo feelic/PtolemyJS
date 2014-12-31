@@ -31,7 +31,7 @@ function Engine (canvasId) {
 			ctx.translate(this.pan.x,this.pan.y);
 
 		}
-		else {
+		else {
 			ctx.translate(this.origin.x, this.origin.y)
 			ctx.scale(this.scaleFactor,this.scaleFactor);
 			ctx.translate(-this.origin.x, -this.origin.y)
