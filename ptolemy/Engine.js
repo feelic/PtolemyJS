@@ -9,7 +9,7 @@ function Engine (canvasId) {
 	this.diagram = null;
 	this.margin = 0.1;
 
-	this.canvas = document.getElementById(canvasId);
+	this.paper = Raphael(canvasId, this.width, this.height);
 	this.scaleFactor = 1;
 	this.zoomLevel = 1;
 	this.pan = {x : 0, y : 0};
@@ -20,13 +20,11 @@ function Engine (canvasId) {
 	 */
 	this.render = function() {
 
-		var ctx = this.canvas.getContext('2d');
-		ctx.clearRect(0,0,this.width,this.height);
+		this.paper.clear();
 
-		ctx.rect(0,0,this.width,this.height);
-		ctx.fillStyle = '#428A9E';
-		ctx.fill();
-
+		var rect = this.paper.rect(0,0,this.width,this.height);
+		rect.attr('fill','#428A9E');
+/*
 		if(this.pan.x !== 0 || this.pan.y !== 0) {
 			ctx.translate(this.pan.x,this.pan.y);
 
@@ -36,7 +34,7 @@ function Engine (canvasId) {
 			ctx.scale(this.scaleFactor,this.scaleFactor);
 			ctx.translate(-this.origin.x, -this.origin.y);
 		}
-
+*/
 		for (var i = 0; i < this.mapcells.length; i++) {
 			this.mapcells[i].render();
 		}
@@ -209,6 +207,7 @@ function Engine (canvasId) {
     };
 
 	// **************************************************************************** CANVAS EVENT HANDLER ********************************************************//
+	/*
 	var mousePosition;
 
 	this.canvas.addEventListener("mousedown", function(e){
@@ -254,5 +253,5 @@ function Engine (canvasId) {
     this.canvas.addEventListener ("mousewheel", this.scrollController, false);
     // Firefox
     this.canvas.addEventListener ("DOMMouseScroll", this.scrollController, false);
-
+	*/
 }

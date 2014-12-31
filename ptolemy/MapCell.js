@@ -8,6 +8,8 @@ function MapCell(engine, cell) {
 
 	this.path = [];
 
+	this.element = null;
+
 	/*
 	 * Draws the cell
 	 */
@@ -16,38 +18,28 @@ function MapCell(engine, cell) {
 		this.getDefaultRenderingParameters();
 		if (this.ownerObject && this.ownerObject.getRenderingParameters) this.ownerObject.getRenderingParameters();
 
-		var ctx = this.engine.canvas.getContext('2d');
 
-		ctx.fillStyle = '#2e6689';
-		ctx.fillStyle = this.color;
-		//ctx.fillStyle = '#aaa';
-		ctx.beginPath();
-
-		ctx.moveTo(this.path[0].x,this.path[0].y);
-		for (var i = 1; i < this.path.length; i++) {
-			ctx.lineTo(this.path[i].x,this.path[i].y);
+		var style={
+			fill: this.color,
+			stroke: "#666",
+			"stroke-width": 1,
+			"stroke-linejoin": "round"
 		}
-
-		ctx.closePath();
-		ctx.fill();
 		
 		if (this.strokeColor) {
-			ctx.strokeStyle = this.strokeColor;
+			style.stroke = this.strokeColor;
 		}	
 		else {
-			ctx.strokeStyle = '#666';
-			//ctx.strokeStyle = this.color;
+			style.stroke = '#666';
 		}
-		ctx.stroke();
-		ctx.textAlign = "center";
 
-		//ctx.fillRect(this.cell.site.x,this.cell.site.y,1,1);
-		
-		/*
-		ctx.fillStyle = 'red';
-		ctx.font = "bold 8px Arial";
-		ctx.fillText(this.id,this.cell.site.x,this.cell.site.y)
-		*/
+		var pathString = 'M '+this.path[0].x+' '+this.path[0].y+' ';
+		for (var i = 1; i < this.path.length; i++) {
+			pathString += 'L '+this.path[i].x+' '+this.path[i].y+' ';
+		}
+		this.element = this.engine.paper.path(pathString).attr(style);
+
+		this.setupEventListeners();
 	};
 
 	/*
@@ -223,5 +215,11 @@ function MapCell(engine, cell) {
 		else return false;
 	};
 
+
+	this.setupEventListeners = function () {
+		this.element.click(function() {
+			console.log('click');
+		});
+	};
 	this.definePath();
 }

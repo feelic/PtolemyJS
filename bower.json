@@ -9,6 +9,7 @@
   "dependencies": {
     "Javascript-Voronoi": "https://github.com/gorhill/Javascript-Voronoi.git",
     "raphael": "~2.1.2",
+	"raphael-pan-zoom" : "https://github.com/escobar5/raphael-pan-zoom.git",
     "requirejs": "~2.1.15"
   },
   "devDependencies": {}
