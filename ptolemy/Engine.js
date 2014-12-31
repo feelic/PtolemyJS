@@ -27,21 +27,21 @@ function Engine (canvasId) {
 		ctx.fillStyle = '#428A9E';
 		ctx.fill();
 
-		if(this.pan.x != 0 || this.pan.y != 0) {
+		if(this.pan.x !== 0 || this.pan.y !== 0) {
 			ctx.translate(this.pan.x,this.pan.y);
 
 		}
 		else {
-			ctx.translate(this.origin.x, this.origin.y)
+			ctx.translate(this.origin.x, this.origin.y);
 			ctx.scale(this.scaleFactor,this.scaleFactor);
-			ctx.translate(-this.origin.x, -this.origin.y)
+			ctx.translate(-this.origin.x, -this.origin.y);
 		}
 
 		for (var i = 0; i < this.mapcells.length; i++) {
 			this.mapcells[i].render();
 		}
 		this.displayStatus();
-	}
+	};
 
 	/*
 	 * Displays a box with all the current engine info
@@ -51,7 +51,7 @@ function Engine (canvasId) {
 		if (elt) {
 		document.getElementById('enginestatus').innerHTML = '<div id="enginestatus"><table><tr><td>origin</td><td>'+Math.floor(this.origin.x)+'</td><td>'+Math.floor(this.origin.y)+'</td></tr><tr><td>Zoom</td><td>'+this.zoomLevel+'</td><td></td></tr><tr id="enginestatus_click"></tr></table></div>';
 		}
-	}
+	};
 
 	// **************************************************************************** CELL SELECTION ********************************************************//
 
@@ -65,7 +65,7 @@ function Engine (canvasId) {
 		if (c != -1) {
 			this.renderCellSelection(c);
 		}
-	}
+	};
 
 	/*
 	 * returns the id of the cell containing the point parameter
@@ -76,7 +76,7 @@ function Engine (canvasId) {
 		}
 		console.log('Not a cell');
 		return -1;
-	}
+	};
 
 	/*
 	 * re-renders currently selected cell
@@ -93,13 +93,13 @@ function Engine (canvasId) {
 		this.selectedCell = this.mapcells[cellId];
 		this.selectedCell.strokeColor = 'red';
 		this.selectedCell.render();
-	}
+	};
 
 	/*
 	 * gets canvas offset on the page for coordinate ajustment
 	 */
 	this.getCanvasOffset = function() {
-		var element = this.canvas
+		var element = this.canvas;
 		var top = 0, left = 0;
 		do {
 			top += element.offsetTop  || 0;
@@ -108,7 +108,7 @@ function Engine (canvasId) {
 		} while(element);
 
 		return { y: top, x: left };
-	}
+	};
 
 	/*
 	 * converts coordinates from current zoom to model coordinates
@@ -120,7 +120,7 @@ function Engine (canvasId) {
             p.y = p.y / 1.1;
         }
         return p;
-    }
+    };
 
 	// **************************************************************************** MOVEMENT FUNCTIONS ********************************************************//
 
@@ -135,11 +135,11 @@ function Engine (canvasId) {
 			this.zoomLevel += 0.1;
 
 			// set pan to 0
-			this.pan = { x:0, y:0 }
+			this.pan = { x:0, y:0 };
 
 			this.render();
 		}
-	}
+	};
 
 	/*
 	 * Zooms Out
@@ -152,11 +152,11 @@ function Engine (canvasId) {
 			this.zoomLevel -= 0.1;
 
 			// set pan to 0
-			this.pan = { x:0, y:0 }
+			this.pan = { x:0, y:0 };
 
 			this.render();
 		}
-	}
+	};
 
 	/*
 	 * Pan to coordinates
@@ -169,7 +169,7 @@ function Engine (canvasId) {
 		this.pan.y = y;
 
 		this.render();
-	}
+	};
 
 	/*
 	 * Pan canvas according to vertex a b
@@ -185,7 +185,7 @@ function Engine (canvasId) {
 		this.origin.y += y;
 
 		this.panToCoordinates(x, y);
-	}
+	};
 
     this.toAbsolutePoint = function (p) {
 		//the received Point is calculated from the document origin, we have to ajust it
@@ -197,7 +197,7 @@ function Engine (canvasId) {
 		point = substractPoints(point, this.origin);
 
         return point;
-    }
+    };
 
     this.scalePoint = function (p) {
         var t = (this.zoomLevel - 1) * 10;
@@ -206,7 +206,7 @@ function Engine (canvasId) {
             p.y = p.y / 1.1;
         }
         return p;
-    }
+    };
 
 	// **************************************************************************** CANVAS EVENT HANDLER ********************************************************//
 	var mousePosition;
@@ -248,7 +248,7 @@ function Engine (canvasId) {
 		else {
 			that.zoomOut();
 		}
-    }
+    };
 
     // Internet Explorer, Opera, Google Chrome and Safari
     this.canvas.addEventListener ("mousewheel", this.scrollController, false);

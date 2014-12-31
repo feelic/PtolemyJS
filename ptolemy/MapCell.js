@@ -1,7 +1,7 @@
 function MapCell(engine, cell) {
 
 	this.engine = engine;
-	this.ownerObject;
+	this.ownerObject = null;
 
 	this.cell = cell;
 	this.id = this.cell.site.voronoiId;
@@ -48,7 +48,7 @@ function MapCell(engine, cell) {
 		ctx.font = "bold 8px Arial";
 		ctx.fillText(this.id,this.cell.site.x,this.cell.site.y)
 		*/
-	}
+	};
 
 	/*
 	 * Gets the path from the voronoi cell 
@@ -63,7 +63,7 @@ function MapCell(engine, cell) {
 			}
 
 			this.path.push(edges[0].va);
-			var i = 0;
+			i = 0;
 			while ( edges.length > 0) {
 				//Last inserted point
 				var a = this.path[this.path.length-1];
@@ -96,11 +96,11 @@ function MapCell(engine, cell) {
 			}
 		}
 		else {
-			console.log("define path error on cell "+this.id)
+			console.log("define path error on cell "+this.id);
 		}
 
 		//this.logPath();
-	}
+	};
 
 	/*
 	 * Logs the path from the voronoi cell
@@ -109,13 +109,14 @@ function MapCell(engine, cell) {
 		for (var i = 0; i < this.cell.halfedges.length; i++) {
 			var plog = "";
 
-			plog += Math.floor(this.cell.halfedges[i].edge.va.x)+':'
-			plog += Math.floor(this.cell.halfedges[i].edge.va.y)+' - '
-			plog += Math.floor(this.cell.halfedges[i].edge.vb.x)+':'
-			plog += Math.floor(this.cell.halfedges[i].edge.vb.y)+''
+			plog += Math.floor(this.cell.halfedges[i].edge.va.x)+':';
+			plog += Math.floor(this.cell.halfedges[i].edge.va.y)+' - ';
+			plog += Math.floor(this.cell.halfedges[i].edge.vb.x)+':';
+			plog += Math.floor(this.cell.halfedges[i].edge.vb.y)+'';
 			console.log(plog);
 		}
-	}
+	};
+
 	/*
 	 * Logs the path
 	 *
@@ -124,11 +125,11 @@ function MapCell(engine, cell) {
 		for (var i = 0; i < this.path.length; i++) {
 			var plog = "";
 
-			plog += Math.floor(this.path[i].x)+':'
+			plog += Math.floor(this.path[i].x)+':';
 			plog += Math.floor(this.path[i].y);
 			console.log(plog);
 		}
-	}
+	};
 
 	/*
 	 * Checks if the cell is on the borders of the screen
@@ -146,7 +147,7 @@ function MapCell(engine, cell) {
 		}
 
 		return false;
-	}
+	};
 	
 	/*
 	 * Default colors according to height
@@ -154,23 +155,22 @@ function MapCell(engine, cell) {
 	this.getDefaultRenderingParameters = function () {
 		if(this.height == -2) this.color = '#2e6689';
 		if(this.height <= -1) this.color = '#327A8E';
-		if(this.height == 0) this.color = '#428A9E';
+		if(this.height === 0) this.color = '#428A9E';
 		if(this.height == 1) this.color = '#6BC66E';
 		if(this.height == 2) this.color = '#6BC66E';
 		if(this.height == 3) this.color = '#98A641';
 		if(this.height == 4) this.color = '#80762A';
 		if(this.height > 4) this.color = '#70661A';
-	}
+	};
 
 	/*
 	 * Gets an object of parameters, applies it to the cell
 	 */
 	this.updateRenderingParameters = function (parameters) {
-		for(key in parameters) {
+		for (var key in parameters) {
 			this[key] = parameters[key];
 		}
-	}
-
+	};
 
 	/*
 	 * Checks if all points are > 0, if not, set to 0
@@ -188,7 +188,7 @@ function MapCell(engine, cell) {
 		else {
 			console.log('error overZero def on cell '+this.id);
 		}
-	}
+	};
 
 	/*
 	 * Gets an array of the cell's neighbours ids
@@ -203,7 +203,7 @@ function MapCell(engine, cell) {
 				n.push(this.cell.halfedges[i].edge.rSite.voronoiId);
 		}
 		return n;
-	}
+	};
 
 	/*
 	 * Calculates the Area of the cell
@@ -221,6 +221,7 @@ function MapCell(engine, cell) {
 			return area/2;
 		}
 		else return false;
-	}
+	};
+
 	this.definePath();
 }
