@@ -1,5 +1,7 @@
 function MapCell(engine, cell) {
 
+	var that = this;
+
 	this.engine = engine;
 	this.ownerObject = null;
 
@@ -215,11 +217,38 @@ function MapCell(engine, cell) {
 		else return false;
 	};
 
+	this.select = function () {
+		this.element.toFront();
+		this.element.animate({ stroke: "#222"}, 300);
+		this.selected = true;
+	};
+
+	this.unselect = function () {
+		this.render();
+		this.selected = false;
+	};
 
 	this.setupEventListeners = function () {
-		this.element.click(function() {
-			console.log('click');
+		this.element.click(function() {
+			if (!that.engine.panZoom.isDragging()) {
+				if (that.engine.selectedCell) that.engine.selectedCell.unselect();
+				that.select();
+				that.engine.selectedCell = that;
+			}
 		});
+		this.element.mouseover(function() {
+			if (!that.selected) {
+				this.toFront();
+				this.animate({ stroke: "#444"}, 100);
+			}
+		});
+		this.element.mouseout(function() {
+			if (!that.selected) {
+				that.render();
+				if (that.engine.selectedCell) that.engine.selectedCell.element.toFront();
+			}
+		});
+
 	};
 	this.definePath();
 }
