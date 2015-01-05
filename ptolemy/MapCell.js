@@ -93,7 +93,6 @@ function MapCell(engine, cell) {
 			console.log("define path error on cell "+this.id);
 		}
 
-		//this.logPath();
 	};
 
 	/*

@@ -39,4 +39,10 @@ function Engine (canvasId) {
 		}
 	};
 
+	/*
+	 * exports the map as a JSON for saving/ importing purposes
+	 */
+	this.exportMap = function () {
+		
+	}
 }
