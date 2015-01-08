@@ -16,13 +16,14 @@ function Ptolemy (canvasId) {
 	this.render = function() {
 
 		this.paper.clear();
-
+		this.logTime('rendering start');
 		var rect = this.paper.rect(0,0,this.width,this.height);
 		rect.attr('fill','#428A9E');
 
 		for (var i = 0; i < this.cells.length; i++) {
 			this.cells[i].render();
 		}
+		this.logTime('rendering done');
 		this.displayStatus();
 	};
 
@@ -46,7 +47,6 @@ function Ptolemy (canvasId) {
 				cells : []
 			};
 		for (var i = 0; i < this.cells.length; i++) {
-			if (this.cells[i].height) console.log('a')
 			e.cells.push({id : this.cells[i].id, path : this.cells[i].path, neighbours : this.cells[i].neighbours, height: this.cells[i].height});
 		}
 		return JSON.stringify(e);

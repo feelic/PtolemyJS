@@ -12,7 +12,7 @@
 		this.diagram = null;
 		this.margin = 0.1;
 
-		this.grid = new random2DPointSet(this.width, this.height, 100, cellCount);
+		this.grid = new random2DPointSet(this.width, this.height, 20, cellCount);
 		this.logTime('grid done');
 
 		var voronoi = new Voronoi();
@@ -35,7 +35,7 @@
 			this.cells.push(new Cell(this, c.id, c.path, c.getNeighborIds(), c.height));
 
 		}
-		this.logTime('cell loop end');
+		this.logTime('cell loop end, '+i+' cells created');
 
 		if(callback) callback.call(this);
 	};

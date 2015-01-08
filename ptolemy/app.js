@@ -26,7 +26,8 @@ function main () {
 
 
 	document.getElementById("randomMap").addEventListener("click", function( event ) {
-		engine.newRandomWorld(400,16, function(){
+		var n = document.getElementById("cellsCount").value;
+		engine.newRandomWorld(n,16, function(){
 			engine.render();
 		});
 	}, false);
