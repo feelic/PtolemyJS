@@ -7,8 +7,8 @@ function Ptolemy (canvasId) {
 	this.height = 800;
 
 	this.paper = Raphael(canvasId, this.width, this.height);
-	this.panZoom = this.paper.panzoom({ initialZoom: 3, initialPosition: { x: 100, y: 100} });
-	this.panZoom.enable();
+	this.panZoom = this.paper.panzoom({ initialZoom: 0, initialPosition: { x: 0, y: 0} });
+	//this.panZoom.enable();
 
 	/*
 	 * Renders the map cells to an html element (with id = canvasId)

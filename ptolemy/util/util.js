@@ -16,30 +16,22 @@ function random2DPointSet( width, height, min_dist, count ) {
 	}
 }
 
-//UTIL FUNCTIONS
-function getNoisedPath (A, B, i) {
-	var p = [A];
-	var ps = getNoisedSegment (A, B,i/4);
-	p = p.concat(ps);
-	p.push(B);
-	return p;
+
+function getRandomInArray(a) {
+	return a[Math.floor(Math.random()*a.length)];
 }
 
-function getNoisedSegment (A, B, i) {
-	var mid = getRandomPointBetween (A, B);
-	if (i > 0) return getNoisedSegment(A, mid, Math.floor(i/2) ).concat(mid, getNoisedSegment(mid,B,Math.floor(i/2)) );
-	else return [mid];
+function getMouse(e){
+    var w = window, b = document.body;
+	if (!e) e = window.event;
+    return {x: e.clientX + (w.scrollX || b.scrollLeft || b.parentNode.scrollLeft || 0),
+    y: e.clientY + (w.scrollY || b.scrollTop || b.parentNode.scrollTop || 0)};
 }
 
-function getRandomPointBetween (A, B) {
-	var point = {};
-	
-	n = Math.abs(A.x - B.x)/2;
-	m = Math.abs(A.y - B.y)/2;
-	point.x = Math.round(( A.x + B.x ) / 2 + getRandomIntegerInRange(-n, n));
-	point.y = Math.round(( A.y + B.y ) / 2 + getRandomIntegerInRange(-m, m));
-
-	return point;
+function interpolate (A, B, f) {
+	var x = ( f * A.x ) + ( (1 - f) * B.x );
+	var y = ( f * A.y ) + ( (1 - f) * B.y );
+	return ({x : x, y : y});
 }
 
 function getRandomInRange (min, max) {
@@ -47,12 +39,8 @@ function getRandomInRange (min, max) {
 }
 
 function getRandomIntegerInRange (min, max) {
-    max+=1;
+    max += 1;
 	return Math.floor(Math.random() * (max - min) + min);
-}
-
-function getRandomInArray(a) {
-	return a[Math.floor(Math.random()*a.length)];
 }
 
 function addPoints( a, b ) {
@@ -61,26 +49,6 @@ function addPoints( a, b ) {
 
 function substractPoints( a, b ) {
 	return { x: a.x - b.x, y : a.y - b.y };
-}
-
-function segmentLength(a, b) {
-  var xs = 0;
-  var ys = 0;
-
-  xs = b.x - a.x;
-  xs = xs * xs;
-
-  ys = b.y - a.y;
-  ys = ys * ys;
-
-  return Math.sqrt( xs + ys );
-}
-
-function getMouse(e){
-    var w = window, b = document.body;
-	if (!e) e = window.event;
-    return {x: e.clientX + (w.scrollX || b.scrollLeft || b.parentNode.scrollLeft || 0),
-    y: e.clientY + (w.scrollY || b.scrollTop || b.parentNode.scrollTop || 0)};
 }
 
 //+ Jonas Raoni Soares Silva
@@ -92,3 +60,17 @@ function isPointInPoly(poly, pt){
 		(c = !c);
     return c;
 }
+
+function segmentLength(A, B) {
+	var xs = 0;
+	var ys = 0;
+
+	xs = B.x - A.x;
+	xs = xs * xs;
+
+	ys = B.y - A.y;
+	ys = ys * ys;
+
+	return Math.sqrt( xs + ys );
+}
+

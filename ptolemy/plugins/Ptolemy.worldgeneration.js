@@ -20,36 +20,23 @@
 		this.diagram = voronoi.compute(this.grid.points, this.bbox);
 		this.logTime('diagram done');
 
-		this.applyNoisetoAllTheEdges(edgeNoise);
+		this.randomizeHeights (Math.ceil(cellCount/500),Math.ceil(cellCount/100));
+		this.logTime('randomize heights done');
+
+		this.buildNoisyEdges();
 		this.logTime('noise done');
 
 		for (var i = 0; i < this.diagram.cells.length; i++) {
 			var c = this.diagram.cells[i];
 
-			// CELL ID
-			var id = c.site.voronoiId;
-
-			// NEIGHBOUR ARRAY
-			var neighbours = [];
-
-			for (var j = 0; j < c.halfedges.length; j++) {
-				if(c.halfedges[j].edge.lSite && c.halfedges[j].edge.lSite.voronoiId != id) 
-					neighbours.push(c.halfedges[j].edge.lSite.voronoiId);
-				else if (c.halfedges[j].edge.rSite)
-					neighbours.push(c.halfedges[j].edge.rSite.voronoiId);
-			}
-
 			// PATH DEFINITION
-			this.overZero.apply(c);
-			var path = this.definePath.apply(c);
-			this.cells.push(new Cell(this, id, path, neighbours));
+			var path = this.definePath(i);
+
+			this.cells.push(new Cell(this, c.id, c.path, c.getNeighborIds(), c.height));
 
 		}
 		this.logTime('cell loop end');
 
-		this.randomizeHeights (Math.ceil(cellCount/500),Math.ceil(cellCount/100));
-
-		this.logTime('randomize heights done');
 		if(callback) callback.call(this);
 	};
 
@@ -66,23 +53,81 @@
 		}
 	};
 
-	/*
-	 * Gets the path from a voronoi cell 
-	 */
-	Ptolemy.prototype.definePath = function () {
+	// Build noisy line paths for each of the Voronoi edges. There are two noisy line paths for each edge, each covering half the
+	// distance: path0 is from v0 to the midpoint and path1 is from v1 to the midpoint. When drawing the polygons, one or the other
+	// must be drawn in reverse order.
+	Ptolemy.prototype.buildNoisyEdges = function () {
+
+		for (var i = 0; i < this.diagram.edges.length; i++) {
+			var edge = this.diagram.edges[i];
+			if (edge.rSite && edge.lSite && edge.va && edge.vb) {
+				var f = 0.5;
+				var t = interpolate(edge.va, edge.rSite, f);
+				var q = interpolate(edge.va, edge.lSite, f);
+				var r = interpolate(edge.vb, edge.rSite, f);
+				var s = interpolate(edge.vb, edge.lSite, f);
+				var midpoint = interpolate(edge.vb, edge.va, f);
+				var minLength = 10;
+
+				if (this.diagram.cells[edge.rSite.voronoiId].height <= 0 && this.diagram.cells[edge.lSite.voronoiId].height <= 0 ) minLength = 100;
+				if (this.diagram.cells[edge.rSite.voronoiId].height <= 0 && this.diagram.cells[edge.lSite.voronoiId].height > 0 ) minLength = 1;
+				if (this.diagram.cells[edge.rSite.voronoiId].height > 0 && this.diagram.cells[edge.lSite.voronoiId].height <= 0 ) minLength = 1;
+
+				edge.path = this.buildNoisyLineSegments( edge.va, t, midpoint, q, minLength);
+				edge.path.concat(this.buildNoisyLineSegments( edge.vb, s, midpoint, r, minLength));
+				edge.path.push(edge.vb);
+			}
+			else {
+				edge.path = [edge.va, edge.vb];
+			}
+		}
+	}
+
+	// Helper function: build a single noisy line in a quadrilateral A-B-C-D, and store the output points in an array.
+	Ptolemy.prototype.buildNoisyLineSegments = function (A, B, C, D, minLength) {
+		var points = [];
+
+		function subdivide(A, B, C, D) {
+			if (segmentLength(A, C) < minLength || segmentLength(B, D) < minLength) {
+				return;
+			}
+			// Subdivide the quadrilateral
+			var p = getRandomInRange(0.2, 0.8); // vertical (along A-D and B-C)
+			var q = getRandomInRange(0.2, 0.8); // horizontal (along A-B and D-C)
+			// Midpoints
+			var E = interpolate(A, D, p);
+			var F = interpolate(B, C, p);
+			var G = interpolate(A, B, q);
+			var I = interpolate(D, C, q);
+			// Central point
+			var H = interpolate(E, F, q);
+			// Divide the quad into subquads, but meet at H
+			var s = 1.0 - getRandomInRange(-0.4, +0.4);
+			var t = 1.0 - getRandomInRange(-0.4, +0.4);
+			subdivide(A, interpolate(G, B, s), H, interpolate(E, D, t));
+			points.push(H);
+			subdivide(H, interpolate(F, C, s), C, interpolate(I, D, t));
+		}
+
+		points.push(A);
+		subdivide(A, B, C, D);
+		points.push(C);
+
+		return points;
+	}
+
+	Ptolemy.prototype.definePath = function (cellid) {
+		var cell =  this.diagram.cells[cellid];
+
 		var path = [];
 		var edges = [];
-		for (var i = 0; i < this.halfedges.length; i++) {
-			edges.push(this.halfedges[i].edge);
+		for (var i = 0; i < cell.halfedges.length; i++) {
+			//console.log(cell.halfedges[i].edge.va.x+' : '+cell.halfedges[i].edge.va.y+' -> '+cell.halfedges[i].edge.vb.x+' : '+cell.halfedges[i].edge.vb.y)
+			edges.push(cell.halfedges[i].edge);
 		}
-		for (var k = 0; k <edges.length; k++) {
-			edges[k].va.x = Math.round(edges[k].va.x);
-			edges[k].va.y = Math.round(edges[k].va.y);
-			edges[k].vb.x = Math.round(edges[k].vb.x);
-			edges[k].vb.y = Math.round(edges[k].vb.y);
-		}
+
 		path.push(edges[0].va);
-		i = 0;
+		var i = 0;
 		while ( edges.length > 0) {
 
 			//Last inserted point
@@ -94,7 +139,7 @@
 
 			var msg = '';
 			//The paths can be A - B or B - A, there is no way of knowing beforehand, we need to check for that, and not put twice the same point
-			if ( Math.floor(100*a.x)/100 == Math.floor(100*va.x)/100 && Math.floor(100*a.y)/100 == Math.floor(100*va.y)/100 ) {
+			if ( a.x == va.x && a.y == va.y ) {
 				edges.splice(edges.indexOf(v), 1);
 				for(var j = 0; j < v.path.length;j++) {
 					if(!(v.path[j].x == path[path.length-1].x && v.path[j].y ==path[path.length-1].y)) path.push(v.path[j]);
@@ -102,7 +147,7 @@
 				i = 0;
 
 			}
-			else if ( Math.floor(100*a.x )/100== Math.floor(100*vb.x)/100 && Math.floor(100*a.y)/100 == Math.floor(100*vb.y)/100  ) {
+			if ( a.x == vb.x && a.y == vb.y ) {
 				edges.splice(edges.indexOf(v), 1);
 				for(var j = (v.path.length-1);j>=0;j--) {
 					if(!(v.path[j].x == path[path.length-1].x && v.path[j].y ==path[path.length-1].y)) path.push(v.path[j]);
@@ -115,39 +160,34 @@
 
 			if( i >= 50 ) break;
 		}
-		return path;
-	};
-	
-	/*
-	 * Gets a random noised path for each border between cells
-	 */
-	Ptolemy.prototype.applyNoisetoAllTheEdges = function(strength) {
-		for(var i = 0; i < this.diagram.edges.length;i++){
-			var e = this.diagram.edges[i];
-			e.path = getNoisedPath(e.va, e.vb, strength);
-		}
-	};
+		cell.path = path;
+	}
 
 	/*
 	 * Uses a drunkard walk to set random heights on the map, then defines the height of all remaining cells
 	 */
 	Ptolemy.prototype.randomizeHeights = function (chains, chainLength) {
 		//Screen border are always water
-		for (var i = 0; i < this.cells.length; i++) {
-			if (this.cells[i].isScreenBorders()) {
-				this.cells[i].height = -1;
+		for (var i = 0; i < this.diagram.cells.length; i++) {
+			for (var j = 0; j < this.diagram.cells[i].halfedges.length; j++) {
+				var e = this.diagram.cells[i].halfedges[j].edge;
+				if ( e.va.x <= 0 || e.va.y <= 0 || e.va.x >= this.width || e.va.y >= this.width || e.vb.x <= 0 || e.vb.y <= 0 || e.vb.x >= this.width || e.vb.y >= this.width ) {
+					this.diagram.cells[i].height = -1;
+				}
 			}
 		}
 		
 		//create a number of mountain ranges
 		for(i = 0; i < chains; i++)	{
 			var h = 4;
-			var d = Math.floor(Math.random()*this.cells.length);
-			var cell = this.cells[d];
+			var d = Math.floor(Math.random()*this.diagram.cells.length);
+			var cell = this.diagram.cells[d];
+			var neighbours = cell.getNeighborIds();
+
 			for(var j = 0; j < chainLength; j++) {
 				if (!cell.height && cell.height !== 0) {
 					cell.height = h;
-					cell = this.cells[cell.neighbours[Math.floor(Math.random()*cell.neighbours.length)]];
+					cell = this.diagram.cells[neighbours[Math.floor(Math.random()*neighbours.length)]];
 				}
 				else {
 					if (i>=0 && j<=0) i--;
@@ -156,36 +196,47 @@
 			}
 		}
 		//a little bit more randomness, shall we?
-		for (i = 0; i < this.cells.length/100; i++) {
-			var a = Math.floor(Math.random()*this.cells.length);
-			this.cells[a].height = getRandomInArray([-1,0,1,2,3]);
+		for (i = 0; i < this.diagram.cells.length/100; i++) {
+			var a = Math.floor(Math.random()*this.diagram.cells.length);
+			this.diagram.cells[a].height = getRandomInArray([-1,0,1,2,3]);
 		}
 
 		//sets heights according to neighbours to some random cells
-		for (i = 0; i < this.cells.length/4; i++) {
-			var a = Math.floor(Math.random()*this.cells.length);
-			if (!this.cells[a].height && this.cells[a].height !== 0) {
-				var h = this.getAvgHeightFromCellList(this.cells[a].neighbours) + getRandomInArray([-1,0,0,0,0,1]);
+		for (i = 0; i < this.diagram.cells.length/4; i++) {
+			var a = Math.floor(Math.random()*this.diagram.cells.length);
+
+			var cell = this.diagram.cells[i];
+			var neighbours = cell.getNeighborIds();
+
+			if (!this.diagram.cells[a].height && this.diagram.cells[a].height !== 0) {
+				var h = this.getAvgHeightFromCellList(neighbours) + getRandomInArray([-1,0,0,0,0,1]);
 				if (h < -2) h = -2;
 				if (h > 5) h = 5;
-				this.cells[a].height = h;
+				this.diagram.cells[a].height = h;
 			}
 		}
 
 		//sets the remaining cells heights
-		for (i = 0; i < this.cells.length; i++) {
-			if (!this.cells[i].height && this.cells[i].height !== 0) {
-				var h = this.getAvgHeightFromCellList(this.cells[i].neighbours) + getRandomInArray([-1,0,0,0,0,1]);
+		for (i = 0; i < this.diagram.cells.length; i++) {
+			if (!this.diagram.cells[i].height && this.diagram.cells[i].height !== 0) {
+
+				var cell = this.diagram.cells[i];
+				var neighbours = cell.getNeighborIds();
+
+				var h = this.getAvgHeightFromCellList(neighbours) + getRandomInArray([-1,0,0,0,0,1]);
 				if (h < -2) h = -2;
 				if (h > 5) h = 5;
-				this.cells[i].height = h;
+				this.diagram.cells[i].height = h;
 			}
 			//getRandomIntegerInRange(-1,1);
 		}
 		//Screen border are ALWAYS water
-		for (i = 0; i < this.cells.length; i++) {
-			if (this.cells[i].isScreenBorders()) {
-				this.cells[i].height = -1;
+		for (i = 0; i < this.diagram.cells.length; i++) {
+			for (var j = 0; j < this.diagram.cells[i].halfedges.length; j++) {
+				var e = this.diagram.cells[i].halfedges[j].edge;
+				if ( e.va.x <= 0 || e.va.y <= 0 || e.va.x >= this.width || e.va.y >= this.width || e.vb.x <= 0 || e.vb.y <= 0 || e.vb.x >= this.width || e.vb.y >= this.width ) {
+					this.diagram.cells[i].height = -1;
+				}
 			}
 		}
 	};
@@ -194,11 +245,11 @@
 	 * Gets the average height from an array of cell ids
 	 */
 	Ptolemy.prototype.getAvgHeightFromCellList = function (idList){
-		a = 0;
-		t = 0;
+		var a = 0;
+		var t = 0;
 		for (var i = 0; i < idList.length; i++) {
-			if(this.cells[idList[i]].height || this.cells[idList[i]].height === 0){
-				a += this.cells[idList[i]].height;
+			if(this.diagram.cells[idList[i]].height || this.diagram.cells[idList[i]].height === 0){
+				a += this.diagram.cells[idList[i]].height;
 				t++;
 			}
 		}

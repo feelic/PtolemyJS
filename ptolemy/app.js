@@ -26,7 +26,7 @@ function main () {
 
 
 	document.getElementById("randomMap").addEventListener("click", function( event ) {
-		engine.newRandomWorld(200,16, function(){
+		engine.newRandomWorld(400,16, function(){
 			engine.render();
 		});
 	}, false);
