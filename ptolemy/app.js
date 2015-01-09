@@ -9,7 +9,7 @@ require(['bower_components/raphael/raphael-min.js','bower_components/Javascript-
 		// CORE
 		require(['ptolemy/Ptolemy.js','ptolemy/Cell.js','ptolemy/util/util.js'], function(){
 			// PLUGINS
-			require(['ptolemy/plugins/Ptolemy.worldgeneration.js'], function(){
+			require(['bower_components/noisejs/perlin.js','ptolemy/plugins/Ptolemy.worldgeneration.js'], function(){
 
 				main();
 			});

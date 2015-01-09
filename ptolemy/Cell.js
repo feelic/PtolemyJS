@@ -66,12 +66,9 @@ function Cell(engine, id, path, neighbours, height) {
 			var e = this.path[i];
 
 			if (e.x <= 0 || e.x >= this.engine.width || e.y <= 0 || e.y >= this.engine.height) {
-
-			return true;
-
+				return true;
 			}
 		}
-
 		return false;
 	};
 	
@@ -79,6 +76,16 @@ function Cell(engine, id, path, neighbours, height) {
 	 * Default colors according to height
 	 */
 	this.getDefaultRenderingParameters = function () {
+		this.height = Math.floor( this.height * 100 ) / 100;
+
+		if (this.height <= 0 && this.height > -1 ) this.color = '#428A9E';
+		else if (this.height <= -1) this.color = '#327A8E';
+		else if (this.height== 1) this.color = '#6bc46d';
+		else if(this.height == 2) this.color = '#6BC66E';
+		else if(this.height == 3) this.color = '#98A641';
+		else this.color = '#FFFFFF'; //makeGradientColor({r:107, g:198, b:110},{r:128, g:118, b:42}, this.height *100);
+
+		/*
 		if(this.height == -2) this.color = '#2e6689';
 		if(this.height <= -1) this.color = '#327A8E';
 		if(this.height === 0) this.color = '#428A9E';
@@ -87,6 +94,7 @@ function Cell(engine, id, path, neighbours, height) {
 		if(this.height == 3) this.color = '#98A641';
 		if(this.height == 4) this.color = '#80762A';
 		if(this.height > 4) this.color = '#70661A';
+		*/
 	};
 
 	/*
@@ -149,4 +157,5 @@ function Cell(engine, id, path, neighbours, height) {
 		});
 
 	};
+
 }

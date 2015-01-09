@@ -7,12 +7,12 @@
 	Ptolemy.prototype.newRandomWorld = function(cellCount, edgeNoise, callback) {
 		this.cells = [];
 
-		this.logTime();
+		this.logTime('reset');
 		this.bbox = { xl : 0, xr : this.width, yt : 0, yb : this.height };
 		this.diagram = null;
 		this.margin = 0.1;
 
-		this.grid = new random2DPointSet(this.width, this.height, 20, cellCount);
+		this.grid = new random2DPointSet(this.width, this.height, 50, cellCount);
 		this.logTime('grid done');
 
 		var voronoi = new Voronoi();
@@ -20,7 +20,7 @@
 		this.diagram = voronoi.compute(this.grid.points, this.bbox);
 		this.logTime('diagram done');
 
-		this.randomizeHeights (Math.ceil(cellCount/500),Math.ceil(cellCount/100));
+		this.randomizeHeights (Math.ceil(cellCount/200),Math.ceil(cellCount/50));
 		this.logTime('randomize heights done');
 
 		this.buildNoisyEdges();
@@ -35,7 +35,7 @@
 			this.cells.push(new Cell(this, c.id, c.path, c.getNeighborIds(), c.height));
 
 		}
-		this.logTime('cell loop end, '+i+' cells created');
+		this.logTime('cell loop end, '+this.cells.length+' cells created');
 
 		if(callback) callback.call(this);
 	};
@@ -67,7 +67,7 @@
 				var r = interpolate(edge.vb, edge.rSite, f);
 				var s = interpolate(edge.vb, edge.lSite, f);
 				var midpoint = interpolate(edge.vb, edge.va, f);
-				var minLength = 10;
+				var minLength = 5;
 
 				if (this.diagram.cells[edge.rSite.voronoiId].height <= 0 && this.diagram.cells[edge.lSite.voronoiId].height <= 0 ) minLength = 100;
 				if (this.diagram.cells[edge.rSite.voronoiId].height <= 0 && this.diagram.cells[edge.lSite.voronoiId].height > 0 ) minLength = 1;
@@ -163,84 +163,41 @@
 		cell.path = path;
 	}
 
-	/*
-	 * Uses a drunkard walk to set random heights on the map, then defines the height of all remaining cells
-	 */
-	Ptolemy.prototype.randomizeHeights = function (chains, chainLength) {
-		//Screen border are always water
-		for (var i = 0; i < this.diagram.cells.length; i++) {
-			for (var j = 0; j < this.diagram.cells[i].halfedges.length; j++) {
-				var e = this.diagram.cells[i].halfedges[j].edge;
-				if ( e.va.x <= 0 || e.va.y <= 0 || e.va.x >= this.width || e.va.y >= this.width || e.vb.x <= 0 || e.vb.y <= 0 || e.vb.x >= this.width || e.vb.y >= this.width ) {
-					this.diagram.cells[i].height = -1;
-				}
-			}
-		}
+	Ptolemy.prototype.randomizeHeights = function () {
+
 		
-		//create a number of mountain ranges
-		for(i = 0; i < chains; i++)	{
-			var h = 4;
-			var d = Math.floor(Math.random()*this.diagram.cells.length);
-			var cell = this.diagram.cells[d];
-			var neighbours = cell.getNeighborIds();
-
-			for(var j = 0; j < chainLength; j++) {
-				if (!cell.height && cell.height !== 0) {
-					cell.height = h;
-					cell = this.diagram.cells[neighbours[Math.floor(Math.random()*neighbours.length)]];
-				}
-				else {
-					if (i>=0 && j<=0) i--;
-					break;
-				}
-			}
-		}
-		//a little bit more randomness, shall we?
-		for (i = 0; i < this.diagram.cells.length/100; i++) {
-			var a = Math.floor(Math.random()*this.diagram.cells.length);
-			this.diagram.cells[a].height = getRandomInArray([-1,0,1,2,3]);
-		}
-
-		//sets heights according to neighbours to some random cells
-		for (i = 0; i < this.diagram.cells.length/4; i++) {
-			var a = Math.floor(Math.random()*this.diagram.cells.length);
-
-			var cell = this.diagram.cells[i];
-			var neighbours = cell.getNeighborIds();
-
-			if (!this.diagram.cells[a].height && this.diagram.cells[a].height !== 0) {
-				var h = this.getAvgHeightFromCellList(neighbours) + getRandomInArray([-1,0,0,0,0,1]);
-				if (h < -2) h = -2;
-				if (h > 5) h = 5;
-				this.diagram.cells[a].height = h;
-			}
-		}
-
-		//sets the remaining cells heights
-		for (i = 0; i < this.diagram.cells.length; i++) {
-			if (!this.diagram.cells[i].height && this.diagram.cells[i].height !== 0) {
-
-				var cell = this.diagram.cells[i];
-				var neighbours = cell.getNeighborIds();
-
-				var h = this.getAvgHeightFromCellList(neighbours) + getRandomInArray([-1,0,0,0,0,1]);
-				if (h < -2) h = -2;
-				if (h > 5) h = 5;
-				this.diagram.cells[i].height = h;
-			}
-			//getRandomIntegerInRange(-1,1);
-		}
-		//Screen border are ALWAYS water
-		for (i = 0; i < this.diagram.cells.length; i++) {
+		var borderneighbours = [];
+		for (var i = 0; i < this.diagram.cells.length; i++) {
 			for (var j = 0; j < this.diagram.cells[i].halfedges.length; j++) {
 				var e = this.diagram.cells[i].halfedges[j].edge;
 				if ( e.va.x <= 0 || e.va.y <= 0 || e.va.x >= this.width || e.va.y >= this.width || e.vb.x <= 0 || e.vb.y <= 0 || e.vb.x >= this.width || e.vb.y >= this.width ) {
 					this.diagram.cells[i].height = -1;
+					this.diagram.cells[i].screenborder = true;
+					borderneighbours = borderneighbours.concat(this.diagram.cells[i].getNeighborIds());
 				}
 			}
 		}
-	};
-	
+
+		for (var i = 0; i < borderneighbours.length; i++) {
+			if (!this.diagram.cells[borderneighbours[i]].height || this.diagram.cells[borderneighbours[i]].height != -1) this.diagram.cells[borderneighbours[i]].height = 0;
+		}
+		var d = []
+		for (var i = 0; i < this.diagram.cells.length; i++) {
+			if (!this.diagram.cells[i].height && this.diagram.cells[i].height != 0) {
+				this.diagram.cells[i].height = 1;
+				d.push(this.diagram.cells[i].site.voronoiId);
+			}
+		}
+		//noise.seed(Math.random());
+		for (var i = 0; i < d.length; i++) {
+			//this.diagram.cells[i].height = noise.simplex2(this.diagram.cells[i].site.x, this.diagram.cells[i].site.y);
+			//var n = noise.perlin2(this.diagram.cells[d[i]].site.x, this.diagram.cells[d[i]].site.y);
+			//var n = getRandomInArray([-1,0,0,0,0,0,1,1,2]);
+			//this.diagram.cells[d[i]].height += n;
+		}
+
+	}
+
 	/*
 	 * Gets the average height from an array of cell ids
 	 */

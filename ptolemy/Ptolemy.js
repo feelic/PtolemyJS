@@ -8,7 +8,7 @@ function Ptolemy (canvasId) {
 
 	this.paper = Raphael(canvasId, this.width, this.height);
 	this.panZoom = this.paper.panzoom({ initialZoom: 0, initialPosition: { x: 0, y: 0} });
-	//this.panZoom.enable();
+	this.panZoom.enable();
 
 	/*
 	 * Renders the map cells to an html element (with id = canvasId)
@@ -70,6 +70,7 @@ function Ptolemy (canvasId) {
 	 * Logs time from script start + relative time since last log
 	 */
 	this.logTime = function (msg) {
+		if (msg == 'reset') this.startTime = 0;
 		if (this.startTime) {
 			var t = Date.now();
 			console.log ('time : '+(t - this.startTime)+' ('+(t - this.lastTimeLog)+' ms) '+msg);
