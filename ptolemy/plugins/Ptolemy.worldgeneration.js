@@ -31,8 +31,8 @@
 
 			// PATH DEFINITION
 			var path = this.definePath(i);
-
-			this.cells.push(new Cell(this, c.id, c.path, c.getNeighborIds(), c.height));
+		
+			this.cells.push(new Cell(this, c.site.voronoiId, c.path, c.getNeighborIds(), c.height));
 
 		}
 		this.logTime('cell loop end, '+this.cells.length+' cells created');
@@ -163,41 +163,6 @@
 		cell.path = path;
 	}
 
-	Ptolemy.prototype.randomizeHeights = function () {
-
-		
-		var borderneighbours = [];
-		for (var i = 0; i < this.diagram.cells.length; i++) {
-			for (var j = 0; j < this.diagram.cells[i].halfedges.length; j++) {
-				var e = this.diagram.cells[i].halfedges[j].edge;
-				if ( e.va.x <= 0 || e.va.y <= 0 || e.va.x >= this.width || e.va.y >= this.width || e.vb.x <= 0 || e.vb.y <= 0 || e.vb.x >= this.width || e.vb.y >= this.width ) {
-					this.diagram.cells[i].height = -1;
-					this.diagram.cells[i].screenborder = true;
-					borderneighbours = borderneighbours.concat(this.diagram.cells[i].getNeighborIds());
-				}
-			}
-		}
-
-		for (var i = 0; i < borderneighbours.length; i++) {
-			if (!this.diagram.cells[borderneighbours[i]].height || this.diagram.cells[borderneighbours[i]].height != -1) this.diagram.cells[borderneighbours[i]].height = 0;
-		}
-		var d = []
-		for (var i = 0; i < this.diagram.cells.length; i++) {
-			if (!this.diagram.cells[i].height && this.diagram.cells[i].height != 0) {
-				this.diagram.cells[i].height = 1;
-				d.push(this.diagram.cells[i].site.voronoiId);
-			}
-		}
-		//noise.seed(Math.random());
-		for (var i = 0; i < d.length; i++) {
-			//this.diagram.cells[i].height = noise.simplex2(this.diagram.cells[i].site.x, this.diagram.cells[i].site.y);
-			//var n = noise.perlin2(this.diagram.cells[d[i]].site.x, this.diagram.cells[d[i]].site.y);
-			//var n = getRandomInArray([-1,0,0,0,0,0,1,1,2]);
-			//this.diagram.cells[d[i]].height += n;
-		}
-
-	}
-
 	/*
 	 * Gets the average height from an array of cell ids
 	 */
@@ -210,5 +175,101 @@
 				t++;
 			}
 		}
-		return Math.round(a/t);
+		return a/t;
 	};
+
+	/*
+	 *	Returns the number of coast edges for a given cell
+	 */
+	Ptolemy.prototype.countCoasts = function (cell) {
+		var n = cell.getNeighborIds();
+		var a = 0;
+		for (var i = 0; i < n.length; i++) {
+			if(cell.height > 0 && this.diagram.cells[n[i]].height === 0){
+				a++;
+			}
+			else if (cell.height <= 0 && this.diagram.cells[n[i]].height > 0) {
+				a++;
+			}
+		}
+		return a;
+	}
+
+	Ptolemy.prototype.randomizeHeights = function () {
+
+
+		var total = this.diagram.cells.length;
+		//set screenborder to deepest water
+		var borderneighbours = [];
+		for (var i = 0; i < this.diagram.cells.length; i++) {
+			for (var j = 0; j < this.diagram.cells[i].halfedges.length; j++) {
+				var e = this.diagram.cells[i].halfedges[j].edge;
+				if ( e.va.x <= 0 || e.va.y <= 0 || e.va.x >= this.width || e.va.y >= this.width || e.vb.x <= 0 || e.vb.y <= 0 || e.vb.x >= this.width || e.vb.y >= this.width ) {
+					this.diagram.cells[i].height = -1;
+					borderneighbours = borderneighbours.concat(this.diagram.cells[i].getNeighborIds());
+				}
+			}
+		}
+
+		//set screenborder borders to water
+		for (var i = 0; i < borderneighbours.length; i++) {
+			if (!this.diagram.cells[borderneighbours[i]].height || this.diagram.cells[borderneighbours[i]].height != -1) this.diagram.cells[borderneighbours[i]].height = 0;
+		}
+
+		//only the cells in the center should be used to make the land
+		var center = [];
+		for (var i = 0; i < this.diagram.cells.length; i++) {
+			if (!this.diagram.cells[i].height && this.diagram.cells[i].height != 0) {
+				center.push(this.diagram.cells[i]);
+			}
+		}
+
+		var centertotal = center.length;
+		for(var i = 0; i < centertotal; i++) {
+			a = 0.4 + noise.perlin2(center[i].site.x / 200, center[i].site.y / 200);
+			center[i].height =  Math.round(a * 5);
+		}
+		/*
+		var i = 0;
+		while (i < Math.ceil(centertotal/20) ) {
+			var cell = getRandomInArray(center);
+			if (this.countCoasts(cell) >= 1) {
+				cell.height = 0;
+				var n = cell.getNeighborIds();
+				for(var j = 0; j < n.length;j++) {
+					this.diagram.cells[n[j]].height = 0;
+				}
+			}
+		}
+		*/
+		shuffle(center);
+
+		//smoothen the land
+		for (var i = 0; i < center.length; i++) {
+			cell = center[i];
+			var avgh = this.getAvgHeightFromCellList(cell.getNeighborIds());
+			if (avgh < 1 ) cell.height = getRandomInArray([0,1,1]);
+
+			else if (cell.height === 1) cell.height = Math.round(avgh) + getRandomInArray([-1,0,0,0,0,1]);
+		}
+
+		//coasts should be lowest land height
+		for (var i = 0; i < center.length; i++) {
+			if (center[i].height > 0 && this.countCoasts(center[i]) > 0) center[i].height = 1;
+		}
+
+		shuffle(center);
+
+		//smoothen the land
+		for (var i = 0; i < center.length; i++) {
+			cell = center[i];
+			var avgh = this.getAvgHeightFromCellList(cell.getNeighborIds());
+			if (avgh < 1 ) cell.height = 1;
+			else if (cell.height === 1) cell.height = Math.round(avgh) + getRandomInArray([-1,0,0,0,0,1]);
+		}
+		//coasts should be lowest land height
+		for (var i = 0; i < center.length; i++) {
+			if (this.countCoasts(center[i]) > 0) center[i].height = 1;
+		}
+	}
+
