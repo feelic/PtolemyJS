@@ -119,21 +119,34 @@ function Cell(engine, id, path, neighbours, height) {
 		this.element.toFront();
 		this.element.animate({ stroke: "#222"}, 300);
 		this.selected = true;
+		this.events.select.call(this);
 	};
 
-	this.unselect = function () {
+	this.deselect = function () {
 		this.render();
 		this.selected = false;
+		this.events.deselect.call(this);
 	};
+
+	this.events = { 
+		'select' : function () {
+			console.log('Default selection event handler ! selected cell #'+this.id+', height: '+this.height);
+		},
+		'deselect' : function () {
+			console.log('Default deselection event handler !');
+		}
+	};
+
+	this.on = function (event, fn) {
+		this.events[event] = fn;
+	}
 
 	this.setupEventListeners = function () {
 		this.element.click(function() {
 			if (!that.engine.panZoom.isDragging()) {
-				if (that.engine.selectedCell) that.engine.selectedCell.unselect();
+				if (that.engine.selectedCell) that.engine.selectedCell.deselect();
 				that.select();
 				that.engine.selectedCell = that;
-				console.log('selected cell #'+that.id+', height: '+that.height);
-
 			}
 		});
 		this.element.mouseover(function() {
@@ -150,5 +163,4 @@ function Cell(engine, id, path, neighbours, height) {
 		});
 
 	};
-
 }

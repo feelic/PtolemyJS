@@ -67,8 +67,9 @@
 				var r = interpolate(edge.vb, edge.rSite, f);
 				var s = interpolate(edge.vb, edge.lSite, f);
 				var midpoint = interpolate(edge.vb, edge.va, f);
-				var minLength = 5;
+				var minLength = 10;
 
+				if (this.diagram.cells[edge.rSite.voronoiId].height != this.diagram.cells[edge.lSite.voronoiId].height) minLength = 3;
 				if (this.diagram.cells[edge.rSite.voronoiId].height <= 0 && this.diagram.cells[edge.lSite.voronoiId].height <= 0 ) minLength = 100;
 				if (this.diagram.cells[edge.rSite.voronoiId].height <= 0 && this.diagram.cells[edge.lSite.voronoiId].height > 0 ) minLength = 1;
 				if (this.diagram.cells[edge.rSite.voronoiId].height > 0 && this.diagram.cells[edge.lSite.voronoiId].height <= 0 ) minLength = 1;
