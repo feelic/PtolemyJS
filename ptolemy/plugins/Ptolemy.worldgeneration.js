@@ -82,7 +82,7 @@
 				edge.path = [edge.va, edge.vb];
 			}
 		}
-	}
+	};
 
 	// Helper function: build a single noisy line in a quadrilateral A-B-C-D, and store the output points in an array.
 	Ptolemy.prototype.buildNoisyLineSegments = function (A, B, C, D, minLength) {
@@ -115,7 +115,7 @@
 		points.push(C);
 
 		return points;
-	}
+	};
 
 	Ptolemy.prototype.definePath = function (cellid) {
 		var cell =  this.diagram.cells[cellid];
@@ -162,7 +162,7 @@
 			if( i >= 50 ) break;
 		}
 		cell.path = path;
-	}
+	};
 
 	/*
 	 * Gets the average height from an array of cell ids
@@ -194,7 +194,7 @@
 			}
 		}
 		return a;
-	}
+	};
 
 	Ptolemy.prototype.randomizeHeights = function () {
 
@@ -202,7 +202,7 @@
 		var total = this.diagram.cells.length;
 		//set screenborder to deepest water
 		var borderneighbours = [];
-		for (var i = 0; i < this.diagram.cells.length; i++) {
+		for (var i = 0; i < this.diagram.cells.length; i++) {
 			for (var j = 0; j < this.diagram.cells[i].halfedges.length; j++) {
 				var e = this.diagram.cells[i].halfedges[j].edge;
 				if ( e.va.x <= 0 || e.va.y <= 0 || e.va.x >= this.width || e.va.y >= this.width || e.vb.x <= 0 || e.vb.y <= 0 || e.vb.x >= this.width || e.vb.y >= this.width ) {
@@ -220,7 +220,7 @@
 		//only the cells in the center should be used to make the land
 		var center = [];
 		for (var i = 0; i < this.diagram.cells.length; i++) {
-			if (!this.diagram.cells[i].height && this.diagram.cells[i].height != 0) {
+			if (!this.diagram.cells[i].height && this.diagram.cells[i].height !== 0) {
 				center.push(this.diagram.cells[i]);
 			}
 		}
@@ -272,5 +272,5 @@
 		for (var i = 0; i < center.length; i++) {
 			if (this.countCoasts(center[i]) > 0) center[i].height = 1;
 		}
-	}
+	};
 

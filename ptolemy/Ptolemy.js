@@ -55,7 +55,7 @@ function Ptolemy (canvasId) {
 	/*
 	 * imports a map/engine object
 	 */
-	this.importMap = function (e, callback) {
+	this.importMap = function (e, callback) {
 
 		this.width = e.width;
 		this.height = e.height;

@@ -139,7 +139,7 @@ function Cell(engine, id, path, neighbours, height) {
 
 	this.on = function (event, fn) {
 		this.events[event] = fn;
-	}
+	};
 
 	this.setupEventListeners = function () {
 		this.element.click(function() {
