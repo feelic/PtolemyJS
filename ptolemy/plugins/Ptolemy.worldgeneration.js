@@ -81,6 +81,12 @@
 			else {
 				edge.path = [edge.va, edge.vb];
 			}
+
+			for (var j = 0; j <edge.path.length; j++) {
+				var x = Math.round(edge.path[j].x);
+				var y = Math.round(edge.path[j].y);
+				edge.path[j] = { x : x, y : y };
+			}
 		}
 	};
 
