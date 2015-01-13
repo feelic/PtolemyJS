@@ -37,6 +37,17 @@
 		}
 		this.logTime('cell loop end, '+this.cells.length+' cells created');
 
+		for (var i = 0; i < this.diagram.cells.length; i++) {
+			for (var j = 0; j < this.diagram.cells[i].path.length; j++) {
+				var x = Math.round(this.diagram.cells[i].path[j].x);
+				var y = Math.round(this.diagram.cells[i].path[j].y);		
+
+				this.diagram.cells[i].path[j].x = x;
+				this.diagram.cells[i].path[j].y = y;
+			}	
+		}
+		this.logTime('rounding path points done');
+
 		if(callback) callback.call(this);
 	};
 
@@ -80,12 +91,6 @@
 			}
 			else {
 				edge.path = [edge.va, edge.vb];
-			}
-
-			for (var j = 0; j <edge.path.length; j++) {
-				var x = Math.round(edge.path[j].x);
-				var y = Math.round(edge.path[j].y);
-				edge.path[j] = { x : x, y : y };
 			}
 		}
 	};
