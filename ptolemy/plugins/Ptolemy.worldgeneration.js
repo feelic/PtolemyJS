@@ -117,7 +117,7 @@
 		return points;
 	}
 
-	Ptolemy.prototype.definePath = function (cellid) {
+	Ptolemy.prototype.definePath = function (cellid) {
 		var cell =  this.diagram.cells[cellid];
 
 		var path = [];

@@ -8,7 +8,7 @@ function Ptolemy (canvasId) {
 
 	this.paper = Raphael(canvasId, this.width, this.height);
 	this.panZoom = this.paper.panzoom({ initialZoom: 0, initialPosition: { x: 0, y: 0} });
-	//this.panZoom.enable();
+	this.panZoom.enable();
 
 	/*
 	 * Renders the map cells to an html element (with id = canvasId)
@@ -40,7 +40,7 @@ function Ptolemy (canvasId) {
 	/*
 	 * exports the map as a JSON for saving/ importing purposes
 	 */
-	this.exportMap = function () {
+	this.exportMap = function () {
 		var e = {
 				width: this.width,
 				height: this.height,
