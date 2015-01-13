@@ -219,14 +219,14 @@
 
 		//only the cells in the center should be used to make the land
 		var center = [];
-		for (var i = 0; i < this.diagram.cells.length; i++) {
+		for (var i = 0; i < this.diagram.cells.length; i++) {
 			if (!this.diagram.cells[i].height && this.diagram.cells[i].height !== 0) {
 				center.push(this.diagram.cells[i]);
 			}
 		}
 
 		var centertotal = center.length;
-		for(var i = 0; i < centertotal; i++) {
+		for(var i = 0; i < centertotal; i++) {
 			a = 0.4 + noise.perlin2(center[i].site.x / 200, center[i].site.y / 200);
 			center[i].height =  Math.round(a * 5);
 		}

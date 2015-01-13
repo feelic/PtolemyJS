@@ -33,7 +33,7 @@ function Ptolemy (canvasId) {
 	this.displayStatus = function () {
 		var elt = document.getElementById("enginestatus");
 		if (elt) {
-		document.getElementById('enginestatus').innerHTML = '<div id="enginestatus"><table><tr><td>origin</td><td>'+Math.floor(this.origin.x)+'</td><td>'+Math.floor(this.origin.y)+'</td></tr><tr><td>Zoom</td><td>'+this.zoomLevel+'</td><td></td></tr><tr id="enginestatus_click"></tr></table></div>';
+		document.getElementById('enginestatus').innerHTML = '<div id="enginestatus"></div>';
 		}
 	};
 
