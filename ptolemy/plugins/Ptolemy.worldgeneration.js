@@ -238,7 +238,7 @@
 
 		var centertotal = center.length;
 		for(var i = 0; i < centertotal; i++) {
-			a = 0.4 + noise.perlin2(center[i].site.x / 200, center[i].site.y / 200);
+			var a = 0.4 + noise.perlin2(center[i].site.x / 200, center[i].site.y / 200);
 			center[i].height =  Math.round(a * 5);
 		}
 		/*
@@ -258,7 +258,7 @@
 
 		//smoothen the land
 		for (var i = 0; i < center.length; i++) {
-			cell = center[i];
+			var cell = center[i];
 			var avgh = this.getAvgHeightFromCellList(cell.getNeighborIds());
 			if (avgh < 1 ) cell.height = getRandomInArray([0,1,1]);
 
