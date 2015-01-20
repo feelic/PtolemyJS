@@ -17,22 +17,14 @@ function Cell(engine, id, path, neighbours, height) {
 	this.render = function () {
 
 		this.getDefaultRenderingParameters();
-		if (this.ownerObject && this.ownerObject.getRenderingParameters) this.ownerObject.getRenderingParameters();
-
+		if (this.ownerObject && this.ownerObject.getRenderingParameters) this.updateRenderingParameters(this.ownerObject.getRenderingParameters());
 
 		var style={
 			fill: this.color,
-			stroke: "#666",
+			stroke: this.stroke,
 			"stroke-width": 1,
 			"stroke-linejoin": "round"
 		};
-		
-		if (this.strokeColor) {
-			style.stroke = this.strokeColor;
-		}	
-		else {
-			style.stroke = '#666';
-		}
 
 		var pathString = 'M '+this.path[0].x+' '+this.path[0].y+' ';
 		for (var i = 1; i < this.path.length; i++) {
@@ -85,6 +77,8 @@ function Cell(engine, id, path, neighbours, height) {
 		else if(this.height == 3) this.color = '#98A641';
 		else if(this.height == 4) this.color = '#80762A';
 		else if(this.height > 4) this.color = '#70661A';
+
+		this.stroke = '#666666';
 
 	};
 
