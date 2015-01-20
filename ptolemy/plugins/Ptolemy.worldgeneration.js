@@ -194,7 +194,8 @@
 	 *	Returns the number of coast edges for a given cell
 	 */
 	Ptolemy.prototype.countCoasts = function (cell) {
-		var n = cell.getNeighborIds();
+		if(cell.getNeighborIds) var n = cell.getNeighborIds();
+		else var n = cell.neighbours;
 		var a = 0;
 		for (var i = 0; i < n.length; i++) {
 			if(cell.height > 0 && this.diagram.cells[n[i]].height === 0){
