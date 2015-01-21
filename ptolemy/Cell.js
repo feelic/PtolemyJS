@@ -53,12 +53,13 @@ function Cell(engine, id, site, path, neighbours, borders, height) {
 
 		if (this.data.text) {
 			this.textElement = this.engine.paper.text(this.site.x, this.site.y, this.data.text).attr(this.style.text);
+			this.engine.texts.push(this.textElement);
 		}
 
 		if (this.style.borders.length > 0) {
 			for (key in this.style.borders) {
 				if (this.borders[key]) {
-					this.engine.paper.path(pathToString(this.borders[key])).attr(this.style);	
+					this.engine.paper.path(pathToString(this.borders[key])).attr(this.style);
 				}
 			}
 		}

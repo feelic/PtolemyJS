@@ -20,8 +20,12 @@ function Ptolemy (canvasId) {
 		var rect = this.paper.rect(0,0,this.width,this.height);
 		rect.attr('fill','#428A9E');
 
+		this.texts = [];
 		for (var i = 0; i < this.cells.length; i++) {
 			this.cells[i].render();
+		}
+		for (var i = 0; i < this.texts.length; i++) {
+			this.texts[i].toFront();
 		}
 		this.logTime('rendering done');
 		this.displayStatus();
@@ -33,7 +37,7 @@ function Ptolemy (canvasId) {
 	this.displayStatus = function () {
 		var elt = document.getElementById("enginestatus");
 		if (elt) {
-		document.getElementById('enginestatus').innerHTML = '<div id="enginestatus"></div>';
+			document.getElementById('enginestatus').innerHTML = '<div id="enginestatus"></div>';
 		}
 	};
 
