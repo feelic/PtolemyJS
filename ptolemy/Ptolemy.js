@@ -47,7 +47,7 @@ function Ptolemy (canvasId) {
 				cells : []
 			};
 		for (var i = 0; i < this.cells.length; i++) {
-			e.cells.push({id : this.cells[i].id, path : this.cells[i].path, neighbours : this.cells[i].neighbours, height: this.cells[i].height});
+			e.cells.push({id : this.cells[i].id, site : this.cells[i].site, path : this.cells[i].path, neighbours : this.cells[i].neighbours, borders : this.cells[i].borders, height: this.cells[i].height});
 		}
 		return JSON.stringify(e);
 	};
@@ -61,7 +61,7 @@ function Ptolemy (canvasId) {
 		this.height = e.height;
 
 		this.cells = [];
-		for (var i = 0; i < e.cells.length; i++) this.cells.push(new Cell(this, e.cells[i].id, e.cells[i].path, e.cells[i].neighbours, e.cells[i].height));
+		for (var i = 0; i < e.cells.length; i++) this.cells.push(new Cell(this, e.cells[i].id, e.cells[i].site, e.cells[i].path, e.cells[i].neighbours, e.cells[i].borders, e.cells[i].height));
 
 		if (callback) callback();
 	};

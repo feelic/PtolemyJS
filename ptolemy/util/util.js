@@ -16,6 +16,13 @@ function random2DPointSet( width, height, min_dist, count ) {
 	}
 }
 
+function pathToString(path) {
+	var p = 'M '+path[0].x+' '+path[0].y+' ';
+	for (var i = 1; i < path.length; i++) {
+		p += 'L '+path[i].x+' '+path[i].y+' ';
+	}
+	return p;
+}
 
 function getRandomInArray(a) {
 	return a[Math.floor(Math.random()*a.length)];

@@ -31,8 +31,7 @@
 
 			// PATH DEFINITION
 			var path = this.definePath(i);
-		
-			this.cells.push(new Cell(this, c.site.voronoiId, c.path, c.getNeighborIds(), c.borders, c.height));
+			this.cells.push(new Cell(this, c.site.voronoiId, c.site, c.path, c.getNeighborIds(), c.borders, c.height));
 		}
 		this.logTime('cell loop end, '+this.cells.length+' cells created');
 

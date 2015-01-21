@@ -1,14 +1,17 @@
-function Cell(engine, id, path, neighbours, borders, height) {
+function Cell(engine, id, site, path, neighbours, borders, height) {
 
 	var that = this;
 
 	this.engine = engine;
 
 	this.id = id;
+	this.site = site;
+
 	this.path = path;
 	this.neighbours = neighbours;
 	this.borders = borders;
 	this.height = height;
+	
 
 	this.element = null;
 
@@ -27,6 +30,9 @@ function Cell(engine, id, path, neighbours, borders, height) {
 			'stroke-width': '',
 			'letter-spacing': 1,
 			'word-spacing': 1
+		},
+		'borders' : {
+			
 		}
 	};
 
@@ -42,13 +48,21 @@ function Cell(engine, id, path, neighbours, borders, height) {
 		this.getDefaultRenderingParameters();
 		if (this.ownerObject && this.ownerObject.getRenderingParameters) this.updateRenderingParameters(this.ownerObject.getRenderingParameters());
 
-		var pathString = 'M '+this.path[0].x+' '+this.path[0].y+' ';
-		for (var i = 1; i < this.path.length; i++) {
-			pathString += 'L '+this.path[i].x+' '+this.path[i].y+' ';
-		}
+		var pathString = pathToString(this.path);
 		this.element = this.engine.paper.path(pathString).attr(this.style);
 
-		if (this.data.text) this.textElement = this.engine.paper.text(0, 0, this.data.text).attr(this.style.text);
+		if (this.data.text) {
+			this.textElement = this.engine.paper.text(this.site.x, this.site.y, this.data.text).attr(this.style.text);
+		}
+
+		if (this.style.borders.length > 0) {
+			for (key in this.style.borders) {
+				if (this.borders[key]) {
+					this.engine.paper.path(pathToString(this.borders[key])).attr(this.style);	
+				}
+			}
+		}
+
 		this.setupEventListeners();
 	};
 
@@ -177,4 +191,5 @@ function Cell(engine, id, path, neighbours, borders, height) {
 		});
 
 	};
+
 }
