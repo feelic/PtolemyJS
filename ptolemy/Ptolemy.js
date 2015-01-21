@@ -24,12 +24,21 @@ function Ptolemy (canvasId) {
 		for (var i = 0; i < this.cells.length; i++) {
 			this.cells[i].render();
 		}
-		for (var i = 0; i < this.texts.length; i++) {
-			this.texts[i].toFront();
-		}
+
+		this.resetTextLayer();
+
 		this.logTime('rendering done');
 		this.displayStatus();
 	};
+	
+	/*
+	 * Moves all the texts the front
+	 */
+	this.resetTextLayer = function () {
+		for (var i = 0; i < this.texts.length; i++) {
+			this.texts[i].toFront();
+		}
+	}
 
 	/*
 	 * Displays a box with all the current engine info

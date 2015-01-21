@@ -51,17 +51,17 @@ function Cell(engine, id, site, path, neighbours, borders, height) {
 		var pathString = pathToString(this.path);
 		this.element = this.engine.paper.path(pathString).attr(this.style);
 
-		if (this.data.text) {
-			this.textElement = this.engine.paper.text(this.site.x, this.site.y, this.data.text).attr(this.style.text);
-			this.engine.texts.push(this.textElement);
-		}
-
 		if (this.style.borders.length > 0) {
 			for (key in this.style.borders) {
 				if (this.borders[key]) {
 					this.engine.paper.path(pathToString(this.borders[key])).attr(this.style);
 				}
 			}
+		}
+
+		if (this.data.text) {
+			this.textElement = this.engine.paper.text(this.site.x, this.site.y, this.data.text).attr(this.style.text);
+			this.engine.texts.push(this.textElement);
 		}
 
 		this.setupEventListeners();
@@ -149,12 +149,14 @@ function Cell(engine, id, site, path, neighbours, borders, height) {
 		this.element.animate({ stroke: "#222"}, 300);
 		this.selected = true;
 		this.events.select.call(this);
+		this.engine.resetTextLayer();
 	};
 
 	this.deselect = function () {
 		this.render();
 		this.selected = false;
 		this.events.deselect.call(this);
+		this.engine.resetTextLayer();
 	};
 
 	this.events = { 
@@ -182,12 +184,14 @@ function Cell(engine, id, site, path, neighbours, borders, height) {
 			if (!that.selected) {
 				this.toFront();
 				this.animate({ stroke: "#444"}, 100);
+				that.engine.resetTextLayer();
 			}
 		});
 		this.element.mouseout(function() {
 			if (!that.selected) {
 				that.render();
 				if (that.engine.selectedCell) that.engine.selectedCell.element.toFront();
+				that.engine.resetTextLayer();
 			}
 		});
 
