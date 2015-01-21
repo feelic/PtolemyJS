@@ -32,8 +32,7 @@
 			// PATH DEFINITION
 			var path = this.definePath(i);
 		
-			this.cells.push(new Cell(this, c.site.voronoiId, c.path, c.getNeighborIds(), c.height));
-
+			this.cells.push(new Cell(this, c.site.voronoiId, c.path, c.getNeighborIds(), c.borders, c.height));
 		}
 		this.logTime('cell loop end, '+this.cells.length+' cells created');
 
@@ -130,18 +129,24 @@
 
 	Ptolemy.prototype.definePath = function (cellid) {
 		var cell =  this.diagram.cells[cellid];
+		cell.borders = {};
 
 		var path = [];
 		var edges = [];
 		for (var i = 0; i < cell.halfedges.length; i++) {
-			//console.log(cell.halfedges[i].edge.va.x+' : '+cell.halfedges[i].edge.va.y+' -> '+cell.halfedges[i].edge.vb.x+' : '+cell.halfedges[i].edge.vb.y)
 			edges.push(cell.halfedges[i].edge);
+			if (cell.halfedges[i].edge.lSite && (cell.halfedges[i].edge.lSite.x == cell.site.x && cell.halfedges[i].edge.lSite.y == cell.site.y)) {
+				if (cell.halfedges[i].edge.rSite) cell.borders[cell.halfedges[i].edge.rSite.voronoiId] = cell.halfedges[i].edge.path;
+			}
+			else if (cell.halfedges[i].edge.rSite && (cell.halfedges[i].edge.rSite.x == cell.site.x && cell.halfedges[i].edge.rSite.y == cell.site.y)) {
+				if (cell.halfedges[i].edge.lSite) cell.borders[cell.halfedges[i].edge.lSite.voronoiId] = cell.halfedges[i].edge.path;
+			}
 		}
 
 		path.push(edges[0].va);
 		var i = 0;
 		while ( edges.length > 0) {
-
+		
 			//Last inserted point
 			var a = path[path.length-1];
 			//Vertex to process
@@ -154,7 +159,7 @@
 			if ( a.x == va.x && a.y == va.y ) {
 				edges.splice(edges.indexOf(v), 1);
 				for(var j = 0; j < v.path.length;j++) {
-					if(!(v.path[j].x == path[path.length-1].x && v.path[j].y ==path[path.length-1].y)) path.push(v.path[j]);
+					if(!(v.path[j].x == path[path.length-1].x && v.path[j].y == path[path.length-1].y)) path.push(v.path[j]);
 				}
 				i = 0;
 
@@ -162,7 +167,7 @@
 			if ( a.x == vb.x && a.y == vb.y ) {
 				edges.splice(edges.indexOf(v), 1);
 				for(var j = (v.path.length-1);j>=0;j--) {
-					if(!(v.path[j].x == path[path.length-1].x && v.path[j].y ==path[path.length-1].y)) path.push(v.path[j]);
+					if(!(v.path[j].x == path[path.length-1].x && v.path[j].y == path[path.length-1].y)) path.push(v.path[j]);
 				}
 				i = 0;
 			}

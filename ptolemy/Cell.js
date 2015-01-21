@@ -1,4 +1,4 @@
-function Cell(engine, id, path, neighbours, height) {
+function Cell(engine, id, path, neighbours, borders, height) {
 
 	var that = this;
 
@@ -7,9 +7,32 @@ function Cell(engine, id, path, neighbours, height) {
 	this.id = id;
 	this.path = path;
 	this.neighbours = neighbours;
+	this.borders = borders;
 	this.height = height;
 
 	this.element = null;
+
+	this.style = {
+		'fill': '#FFFFFF',
+		'stroke': '#666666',
+		'stroke-width': 1,
+		'stroke-linejoin': 'round',
+		'stroke-dasharray': '', //[“”, “-”, “.”, “-.”, “-..”, “. ”, “- ”, “--”, “- .”, “--.”, “--..”]
+		'text': {
+			'text-anchor': 'middle',
+			'font-size': 16,
+			'font-family': 'arial',
+			'fill': '#000000',
+			'stroke': '#000000',
+			'stroke-width': '',
+			'letter-spacing': 1,
+			'word-spacing': 1
+		}
+	};
+
+	this.data = {
+		text : ''
+	};
 
 	/*
 	 * Draws the cell
@@ -19,19 +42,13 @@ function Cell(engine, id, path, neighbours, height) {
 		this.getDefaultRenderingParameters();
 		if (this.ownerObject && this.ownerObject.getRenderingParameters) this.updateRenderingParameters(this.ownerObject.getRenderingParameters());
 
-		var style={
-			fill: this.color,
-			stroke: this.stroke,
-			"stroke-width": 1,
-			"stroke-linejoin": "round"
-		};
-
 		var pathString = 'M '+this.path[0].x+' '+this.path[0].y+' ';
 		for (var i = 1; i < this.path.length; i++) {
 			pathString += 'L '+this.path[i].x+' '+this.path[i].y+' ';
 		}
-		this.element = this.engine.paper.path(pathString).attr(style);
+		this.element = this.engine.paper.path(pathString).attr(this.style);
 
+		if (this.data.text) this.textElement = this.engine.paper.text(0, 0, this.data.text).attr(this.style.text);
 		this.setupEventListeners();
 	};
 
@@ -70,15 +87,15 @@ function Cell(engine, id, path, neighbours, height) {
 	this.getDefaultRenderingParameters = function () {
 		this.height = Math.floor( this.height * 100 ) / 100;
 
-		if (this.height <= 0 && this.height > -1 ) this.color = '#428A9E';
-		else if (this.height <= -1) this.color = '#327A8E';
-		else if (this.height== 1) this.color = '#6bc46d';
-		else if(this.height == 2) this.color = '#6BC66E';
-		else if(this.height == 3) this.color = '#98A641';
-		else if(this.height == 4) this.color = '#80762A';
-		else if(this.height > 4) this.color = '#70661A';
+		if (this.height <= 0 && this.height > -1 ) this.style.fill = '#428A9E';
+		else if (this.height <= -1) this.style.fill = '#327A8E';
+		else if (this.height== 1) this.style.fill = '#6bc46d';
+		else if(this.height == 2) this.style.fill = '#6BC66E';
+		else if(this.height == 3) this.style.fill = '#98A641';
+		else if(this.height == 4) this.style.fill = '#80762A';
+		else if(this.height > 4) this.style.fill = '#70661A';
 
-		this.stroke = '#666666';
+		this.style.stroke = '#666666';
 
 	};
 
@@ -86,8 +103,11 @@ function Cell(engine, id, path, neighbours, height) {
 	 * Gets an object of parameters, applies it to the cell
 	 */
 	this.updateRenderingParameters = function (parameters) {
-		for (var key in parameters) {
-			this[key] = parameters[key];
+		for (var key in parameters.style) {
+			this.style[key] = parameters.style[key];
+		}
+		for (var key in parameters.data) {
+			this.data[key] = parameters.data[key];
 		}
 	};
 
