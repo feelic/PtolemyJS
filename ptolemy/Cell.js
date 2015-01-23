@@ -58,8 +58,11 @@ function Cell(engine, id, site, path, neighbours, borders, height) {
 		}
 
 		if (this.data.text) {
-			this.textElement = this.engine.paper.text(this.site.x, this.site.y, this.data.text).attr(this.style.text);
-			this.engine.texts.push(this.textElement);
+			this.textStrokeElement = this.engine.paper.text(this.site.x, this.site.y, this.data.text).attr(this.style.text);
+			this.style.text['stroke-width'] = 0;
+			this.textFillElement = this.engine.paper.text(this.site.x, this.site.y, this.data.text).attr(this.style.text);
+			this.engine.texts.push(this.textStrokeElement);
+			this.engine.texts.push(this.textFillElement);
 		}
 
 		this.setupEventListeners();
