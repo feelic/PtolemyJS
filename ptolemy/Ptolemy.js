@@ -96,3 +96,7 @@ function Ptolemy (canvasId) {
 		}
 	};
 }
+Ptolemy.version = '1.0';
+Ptolemy.toString = function () {
+	return 'PtolemyJS '+this.version+' - 2D map engine for JS games';
+};

@@ -51,11 +51,9 @@ function Cell(engine, id, site, path, neighbours, borders, height) {
 		var pathString = pathToString(this.path);
 		this.element = this.engine.paper.path(pathString).attr(this.style);
 
-		if (this.style.borders.length > 0) {
-			for (key in this.style.borders) {
-				if (this.borders[key]) {
-					this.engine.paper.path(pathToString(this.borders[key])).attr(this.style);
-				}
+		for (var key in this.style.borders) {
+			if (this.borders[key]) {
+				this.engine.paper.path(pathToString(this.borders[key])).attr(this.style.borders[key]);
 			}
 		}
 
