@@ -16,7 +16,7 @@ function Ptolemy (canvasId) {
 	this.render = function() {
 
 		this.paper.clear();
-		this.logTime('rendering start');
+		console.time('Rendering map');
 		var rect = this.paper.rect(0,0,this.width,this.height);
 		rect.attr('fill','#428A9E');
 
@@ -27,7 +27,7 @@ function Ptolemy (canvasId) {
 
 		this.resetTextLayer();
 
-		this.logTime('rendering done');
+		console.timeEnd('Rendering map');
 		this.displayStatus();
 	};
 	
@@ -79,22 +79,6 @@ function Ptolemy (canvasId) {
 		if (callback) callback();
 	};
 
-	/*
-	 * Logs time from script start + relative time since last log
-	 */
-	this.logTime = function (msg) {
-		if (msg == 'reset') this.startTime = 0;
-		if (this.startTime) {
-			var t = Date.now();
-			console.log ('time : '+(t - this.startTime)+' ('+(t - this.lastTimeLog)+' ms) '+msg);
-			this.lastTimeLog = t;
-		}
-		else {
-			this.startTime = Date.now();
-			this.lastTimeLog = this.startTime;
-			console.log ('start : 0');
-		}
-	};
 }
 Ptolemy.version = '1.0';
 Ptolemy.toString = function () {

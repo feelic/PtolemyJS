@@ -5,27 +5,32 @@
 	 * Generates the corresponding voronoi diagram for a new random set of points, then applies noise to the borders and fools around with heights
 	 */
 	Ptolemy.prototype.newRandomWorld = function(cellCount, edgeNoise, callback) {
+		console.group('Creating random world');
 		this.cells = [];
 
-		this.logTime('reset');
 		this.bbox = { xl : 0, xr : this.width, yt : 0, yb : this.height };
 		this.diagram = null;
 		this.margin = 0.1;
 
+		console.time('creating grid');
 		this.grid = new random2DPointSet(this.width, this.height, 50, cellCount);
-		this.logTime('grid done');
+		console.timeEnd('creating grid');
 
+		console.time('creating voronoi diagram');
 		var voronoi = new Voronoi();
 		voronoi.recycle(this.diagram);
 		this.diagram = voronoi.compute(this.grid.points, this.bbox);
-		this.logTime('diagram done');
+		console.timeEnd('creating voronoi diagram');
 
+		console.time('randomizing heights');
 		this.randomizeHeights (Math.ceil(cellCount/200),Math.ceil(cellCount/50));
-		this.logTime('randomize heights done');
+		console.timeEnd('randomizing heights');
 
+		console.time('Applying noise to paths');
 		this.buildNoisyEdges();
-		this.logTime('noise done');
+		console.timeEnd('Applying noise to paths');
 
+		console.time('cell loop creation');
 		for (var i = 0; i < this.diagram.cells.length; i++) {
 			var c = this.diagram.cells[i];
 
@@ -33,8 +38,9 @@
 			var path = this.definePath(i);
 			this.cells.push(new Cell(this, c.site.voronoiId, c.site, c.path, c.getNeighborIds(), c.borders, c.height));
 		}
-		this.logTime('cell loop end, '+this.cells.length+' cells created');
+		console.timeEnd('cell loop creation');
 
+		console.time('rounding path points');
 		for (var i = 0; i < this.diagram.cells.length; i++) {
 			for (var j = 0; j < this.diagram.cells[i].path.length; j++) {
 				var x = Math.round(this.diagram.cells[i].path[j].x);
@@ -44,7 +50,9 @@
 				this.diagram.cells[i].path[j].y = y;
 			}	
 		}
-		this.logTime('rounding path points done');
+		console.timeEnd('rounding path points');
+
+		console.groupEnd();
 
 		if(callback) callback.call(this);
 	};
@@ -246,19 +254,7 @@
 			var a = 0.4 + noise.perlin2(center[i].site.x / 200, center[i].site.y / 200);
 			center[i].height =  Math.round(a * 5);
 		}
-		/*
-		var i = 0;
-		while (i < Math.ceil(centertotal/20) ) {
-			var cell = getRandomInArray(center);
-			if (this.countCoasts(cell) >= 1) {
-				cell.height = 0;
-				var n = cell.getNeighborIds();
-				for(var j = 0; j < n.length;j++) {
-					this.diagram.cells[n[j]].height = 0;
-				}
-			}
-		}
-		*/
+
 		shuffle(center);
 
 		//smoothen the land
