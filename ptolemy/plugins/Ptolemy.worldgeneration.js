@@ -5,7 +5,7 @@
 	 * Generates the corresponding voronoi diagram for a new random set of points, then applies noise to the borders and fools around with heights
 	 */
 	Ptolemy.prototype.newRandomWorld = function(cellCount, edgeNoise, callback) {
-		console.group('Creating random world');
+		console.groupCollapsed('Creating random world');
 		this.cells = [];
 
 		this.bbox = { xl : 0, xr : this.width, yt : 0, yb : this.height };
