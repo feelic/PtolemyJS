@@ -5,6 +5,14 @@
     "type" : "git",
     "url" : "https://github.com/feelic/PtolemyJS.git"
   },
+  "author": "feelic",
+  "dependencies": {
+    "Javascript-Voronoi": "git+https://github.com/gorhill/Javascript-Voronoi.git",
+    "raphael": "*",
+    "raphael-pan-zoom" : "git+https://github.com/feelic/raphael-pan-zoom.git",
+    "requirejs": "~2.1.15",
+    "noisejs" : "*"
+  },
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-contrib-jshint": "~0.10.0"

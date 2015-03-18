@@ -44,11 +44,11 @@
 		for (var i = 0; i < this.diagram.cells.length; i++) {
 			for (var j = 0; j < this.diagram.cells[i].path.length; j++) {
 				var x = Math.round(this.diagram.cells[i].path[j].x);
-				var y = Math.round(this.diagram.cells[i].path[j].y);		
+				var y = Math.round(this.diagram.cells[i].path[j].y);
 
 				this.diagram.cells[i].path[j].x = x;
 				this.diagram.cells[i].path[j].y = y;
-			}	
+			}
 		}
 		console.timeEnd('rounding path points');
 
@@ -153,7 +153,7 @@
 		path.push(edges[0].va);
 		var i = 0;
 		while ( edges.length > 0) {
-		
+
 			//Last inserted point
 			var a = path[path.length-1];
 			//Vertex to process
@@ -250,6 +250,7 @@
 		}
 
 		var centertotal = center.length;
+		var noise = new Noise ();
 		for(var i = 0; i < centertotal; i++) {
 			var a = 0.4 + noise.perlin2(center[i].site.x / 200, center[i].site.y / 200);
 			center[i].height =  Math.round(a * 5);
@@ -285,4 +286,3 @@
 			if (this.countCoasts(center[i]) > 0) center[i].height = 1;
 		}
 	};
-

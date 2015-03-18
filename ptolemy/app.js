@@ -4,12 +4,12 @@ require.config({
 	urlArgs: "bust=" +  (new Date()).getTime()
 	});
 // DEPENDENCIES
-require(['bower_components/raphael/raphael-min.js','bower_components/Javascript-Voronoi/rhill-voronoi-core.min.js'], function(){
-	require(['bower_components/raphael-pan-zoom/src/raphael.pan-zoom.min.js'],function(){
+require(['node_modules/raphael/raphael-min.js','node_modules/voronoi/rhill-voronoi-core.min.js'], function(){
+	require(['node_modules/raphael-pan-zoom/src/raphael.pan-zoom.min.js'],function(){
 		// CORE
 		require(['ptolemy/Ptolemy.js','ptolemy/Cell.js','ptolemy/util/util.js'], function(){
 			// PLUGINS
-			require(['bower_components/noisejs/perlin.js','ptolemy/plugins/Ptolemy.worldgeneration.js'], function(){
+			require(['node_modules/noisejs/index.js','ptolemy/plugins/Ptolemy.worldgeneration.js'], function(){
 
 				main();
 			});
