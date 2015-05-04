@@ -51,6 +51,19 @@
 			}
 		}
 		console.timeEnd('rounding path points');
+		
+		console.time('remove duplicate points');
+		var simplePath = [];
+		for (var i = 0; i < this.diagram.cells.length; i++) {
+			simplePath = [];
+			for (var j = 0; j < this.diagram.cells[i].path.length; j++) {
+				if (this.diagram.cells[i].path[j] !== this.diagram.cells[i].path[j + 1]){
+					simplePath.push(this.diagram.cells[i].path[j]);
+				}
+			}
+			this.diagram.cells[i].path = simplePath;
+		}
+		console.timeEnd('remove duplicate points');
 
 		console.groupEnd();
 
