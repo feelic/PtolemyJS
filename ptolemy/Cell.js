@@ -11,7 +11,7 @@ function Cell(engine, id, site, path, neighbours, borders, height) {
 	this.neighbours = neighbours;
 	this.borders = borders;
 	this.height = height;
-	
+
 
 	this.element = null;
 
@@ -32,7 +32,7 @@ function Cell(engine, id, site, path, neighbours, borders, height) {
 			'word-spacing': 1
 		},
 		'borders' : {
-			
+
 		}
 	};
 
@@ -96,20 +96,35 @@ function Cell(engine, id, site, path, neighbours, borders, height) {
 		}
 		return false;
 	};
-	
+
 	/*
 	 * Default colors according to height
 	 */
 	this.getDefaultRenderingParameters = function () {
 		this.height = Math.floor( this.height * 100 ) / 100;
 
-		if (this.height <= 0 && this.height > -1 ) this.style.fill = '#428A9E';
-		else if (this.height <= -1) this.style.fill = '#327A8E';
-		else if (this.height== 1) this.style.fill = '#6bc46d';
-		else if(this.height == 2) this.style.fill = '#6BC66E';
-		else if(this.height == 3) this.style.fill = '#98A641';
-		else if(this.height == 4) this.style.fill = '#80762A';
-		else if(this.height > 4) this.style.fill = '#70661A';
+		switch(this.height) {
+			case 4:
+				this.style.fill = '#70661A';
+				break;
+			case 3:
+				this.style.fill = '#80762A';
+				break;
+			case 2:
+				this.style.fill = '#98A641';
+				break;
+			case 1:
+				this.style.fill = '#6BC66E';
+				break;
+			case 0:
+				this.style.fill = '#428A9E';
+				break;
+			case -1:
+				this.style.fill = '#327A8E';
+				break;
+			default:
+				throw new Error('Cell height not supported (height ' + this.height + ' at cell ' + this.id + ')');
+		}
 
 		this.style.stroke = '#666666';
 
@@ -136,8 +151,8 @@ function Cell(engine, id, site, path, neighbours, borders, height) {
 			var area = 0;
 			var j = this.path.length-1;
 
-			for (var i=0; i<this.path.length; i++) { 
-				area = area +  (this.path[j].x+this.path[i].x) * (this.path[j].y-this.path[i].y); 
+			for (var i=0; i<this.path.length; i++) {
+				area = area +  (this.path[j].x+this.path[i].x) * (this.path[j].y-this.path[i].y);
 				j = i;  //j is previous vertex to i
 			}
 			return area/2;
@@ -160,7 +175,7 @@ function Cell(engine, id, site, path, neighbours, borders, height) {
 		this.engine.resetTextLayer();
 	};
 
-	this.events = { 
+	this.events = {
 		'select' : function () {
 			console.log('Default selection event handler ! selected cell #'+this.id+', height: '+this.height);
 		},

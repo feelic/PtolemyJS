@@ -10,7 +10,7 @@
 
 		this.bbox = { xl : 0, xr : this.width, yt : 0, yb : this.height };
 		this.diagram = null;
-		this.margin = 0.1;
+		this.SEA_ADJUST_THRESHOLD = 0.12;
 
 		console.time('creating grid');
 		this.grid = new random2DPointSet(this.width, this.height, 50, cellCount);
@@ -51,7 +51,7 @@
 			}
 		}
 		console.timeEnd('rounding path points');
-		
+
 		console.time('remove duplicate points');
 		var simplePath = [];
 		for (var i = 0; i < this.diagram.cells.length; i++) {
@@ -235,8 +235,6 @@
 
 	Ptolemy.prototype.randomizeHeights = function () {
 
-
-		var total = this.diagram.cells.length;
 		//set screenborder to deepest water
 		var borderneighbours = [];
 		for (var i = 0; i < this.diagram.cells.length; i++) {
@@ -251,7 +249,9 @@
 
 		//set screenborder borders to water
 		for (var i = 0; i < borderneighbours.length; i++) {
-			if (!this.diagram.cells[borderneighbours[i]].height || this.diagram.cells[borderneighbours[i]].height != -1) this.diagram.cells[borderneighbours[i]].height = 0;
+			if (!this.diagram.cells[borderneighbours[i]].height || this.diagram.cells[borderneighbours[i]].height != -1) {
+				this.diagram.cells[borderneighbours[i]].height = 0;
+			}
 		}
 
 		//only the cells in the center should be used to make the land
@@ -264,38 +264,37 @@
 
 		var centertotal = center.length;
 		var noise = new Noise ();
-		for(var i = 0; i < centertotal; i++) {
-			var a = 0.4 + noise.perlin2(center[i].site.x / 200, center[i].site.y / 200);
-			center[i].height =  Math.round(a * 5);
+		noise.seed(Math.random());
+		this.heightslog = [];
+		for (var i = 0; i < centertotal; i++) {
+			var a = noise.perlin2(center[i].site.x / 200, center[i].site.y / 200);
+
+			a = a + this.SEA_ADJUST_THRESHOLD;
+
+			center[i].height = this.getHeightFromRandomValue(a);
+
 		}
 
-		shuffle(center);
+	};
 
-		//smoothen the land
-		for (var i = 0; i < center.length; i++) {
-			var cell = center[i];
-			var avgh = this.getAvgHeightFromCellList(cell.getNeighborIds());
-			if (avgh < 1 ) cell.height = getRandomInArray([0,1,1]);
-
-			else if (cell.height === 1) cell.height = Math.round(avgh) + getRandomInArray([-1,0,0,0,0,1]);
+	/*
+	 * returns a height value from a -1~1 ranged float
+	 */
+	Ptolemy.prototype.getHeightFromRandomValue = function(a) {
+		if (a > 0.9) {
+			return 4;
 		}
-
-		//coasts should be lowest land height
-		for (var i = 0; i < center.length; i++) {
-			if (center[i].height > 0 && this.countCoasts(center[i]) > 0) center[i].height = 1;
+		if (a > 0.6) {
+			return 3;
 		}
-
-		shuffle(center);
-
-		//smoothen the land
-		for (var i = 0; i < center.length; i++) {
-			cell = center[i];
-			var avgh = this.getAvgHeightFromCellList(cell.getNeighborIds());
-			if (avgh < 1 ) cell.height = 1;
-			else if (cell.height === 1) cell.height = Math.round(avgh) + getRandomInArray([-1,0,0,0,0,1]);
+		if (a > 0.3) {
+			return 2;
 		}
-		//coasts should be lowest land height
-		for (var i = 0; i < center.length; i++) {
-			if (this.countCoasts(center[i]) > 0) center[i].height = 1;
+		if (a > 0) {
+			return 1;
 		}
+		if (a > -0.4) {
+			return 0;
+		}
+		return -1;
 	};

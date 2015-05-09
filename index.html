@@ -5,30 +5,48 @@
 		<link rel="apple-touch-icon" sizes="96x96" href="apple-touch-icon.png">
 		<link rel="icon" type="image/png" href="apple-touch-icon.png" sizes="96x96">
 		<link rel="icon" type="image/png" href="favicon.png" sizes="16x16">
-        <script data-main="ptolemy/app" src="node_modules/requirejs/require.js"></script>
+    <style type="text/css">
+      body {
+        background-color:#cdd;
+      }
+      #infopanel {
+        display:inline-block;
+        vertical-align:top;
+        width:400px;
+        padding:0 15px;
+      }
+      #canvaspanel {
+        display:inline-block;
+        vertical-align:top;
+        width:calc(100% - 430px);
+      }
+    </style>
+    <script data-main="ptolemy/app" src="node_modules/requirejs/require.js"></script>
     </head>
     <body>
+      <div id="infopanel">
         <h1>PtolemyJS</h1>
-		<p>
-			PtolemyJS is an Open Source 2D map engine for video games in JS !
-			You can find the <a href="https://github.com/feelic/PtolemyJS">source code on github</a>
-		<p>
-		<p>
-			PtolemyJS is inspired by
-		</p>
-		<ul>
-			<li>Paradox Interactive's Clausewitz engine</li>
-			<li>Amit Patel's fantastic work on <a href="http://www-cs-students.stanford.edu/~amitp/game-programming/polygon-map-generation/">procedural map generation with voronoi diagrams</a></li>
-		</ul>
-		<p>
-			<button id="randomMap">Create a Random Map</button> with <input id="cellsCount" value="200" type="number"> cells <button id="exportMap">Export Map</button> <button id="importMap">Import Map</button>
-		</p>
+    		<p>
+    			PtolemyJS is an Open Source 2D map engine for video games in JS !
+    			You can find the <a href="https://github.com/feelic/PtolemyJS">source code on github</a>
+    		<p>
+    		<p>
+    			PtolemyJS is inspired by
+    		</p>
+    		<ul>
+    			<li>Paradox Interactive's Clausewitz engine</li>
+    			<li>Amit Patel's fantastic work on <a href="http://www-cs-students.stanford.edu/~amitp/game-programming/polygon-map-generation/">procedural map generation with voronoi diagrams</a></li>
+    		</ul>
+    		<p>
+    			<button id="randomMap">Create a Random Map</button> with <input id="cellsCount" value="500" type="number"> cells <button id="exportMap">Export Map</button> <button id="importMap">Import Map</button>
+    		</p>
 
-		<p>
-			<textarea id="mapInput"></textarea>
-		</p>
-		<div id="canvas">
-		</div>
-
+    		<p>
+    			<textarea id="mapInput"></textarea>
+    		</p>
+      </div><div id="canvaspanel">
+    		<div id="canvas">
+    		</div>
+      </div>
     </body>
 </html>
